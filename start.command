@@ -32,7 +32,7 @@ fi
 echo "✅ Python: $PYTHON"
 
 # Install dependencies if not already installed
-"$PYTHON" -m pip install -r requirements.txt -q
+"$PYTHON" -m pip install -r requirements.txt -q --break-system-packages
 
 # Run the app
 "$PYTHON" asbestos_calc.py
