@@ -10,11 +10,6 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
-# ── Paths ─────────────────────────────────────────────────────────────────────
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-OFFERS_DIR = os.path.join(SCRIPT_DIR, "offers")
-os.makedirs(OFFERS_DIR, exist_ok=True)   # auto-create offers/ next to the script
-
 
 STYLE = """
     QMainWindow {
@@ -145,11 +140,6 @@ STYLE = """
         color: #e05555;
         font-size: 12px;
     }
-    QLabel#dir_label {
-        color: #999999;
-        font-size: 10px;
-        font-style: italic;
-    }
 """
 
 OPTION_NAMES = {
@@ -167,8 +157,8 @@ class AsbestosCalc(QMainWindow):
         self.setMinimumWidth(480)
         self.setMaximumWidth(580)
 
-        self._last_result   = None
-        self._last_filepath = None
+        # Track last calculated result for saving
+        self._last_result = None
 
         central = QWidget()
         central.setObjectName("central")
@@ -239,7 +229,7 @@ class AsbestosCalc(QMainWindow):
         calc_btn.setObjectName("calc_btn")
         calc_btn.clicked.connect(self.calculate)
 
-        save_btn = QPushButton("💾  Speichern")
+        save_btn = QPushButton("Speichern")
         save_btn.setObjectName("save_btn")
         save_btn.clicked.connect(self.save_result)
 
@@ -247,12 +237,6 @@ class AsbestosCalc(QMainWindow):
         btn_row.addWidget(calc_btn)
         btn_row.addWidget(save_btn)
         outer.addLayout(btn_row)
-
-        # Offers folder hint
-        dir_lbl = QLabel("📁  Angebote werden gespeichert in: ./offers/")
-        dir_lbl.setObjectName("dir_label")
-        dir_lbl.setToolTip(OFFERS_DIR)  # full path on hover
-        outer.addWidget(dir_lbl)
 
         # ── Result box ───────────────────────────────────────────
         result_box = QFrame()
@@ -288,7 +272,7 @@ class AsbestosCalc(QMainWindow):
         lbl.setMinimumWidth(220)
 
         field = QLineEdit()
-        field.setPlaceholderText("z.B. Küche 8m^2, Köniztalstrasse 14")
+        field.setPlaceholderText("z.B. Küche, Könizstrasse 14")
 
         row.addWidget(lbl)
         row.addStretch()
@@ -365,10 +349,10 @@ class AsbestosCalc(QMainWindow):
         opt_short  = f"Opt{r['option']}"
         default_fn = f"{safe_name}_{price_str}_{opt_short}.txt"
 
-        # Default save location → offers/ folder
+        # Let user choose save location
         path, _ = QFileDialog.getSaveFileName(
-            self, "Angebot speichern",
-            os.path.join(OFFERS_DIR, default_fn),
+            self, "Kalkulation speichern",
+            os.path.join(os.path.expanduser("~"), "Desktop", default_fn),
             "Textdateien (*.txt)"
         )
         if not path:
@@ -424,8 +408,8 @@ BERECHNUNG
         try:
             with open(path, "w", encoding="utf-8") as f:
                 f.write(content)
-            self._last_filepath = path
-            QMessageBox.information(self, "Gespeichert", f"Angebot gespeichert:\n{path}")
+            QMessageBox.information(self, "Gespeichert",
+                                    f"Datei gespeichert:\n{path}")
         except Exception as e:
             QMessageBox.critical(self, "Fehler", f"Konnte nicht speichern:\n{e}")
 
@@ -437,8 +421,7 @@ BERECHNUNG
         self.btn_group.button(1).setChecked(True)
         self.result_value.setText("–")
         self.error_label.setText("")
-        self._last_result   = None
-        self._last_filepath = None
+        self._last_result = None
 
 
 if __name__ == "__main__":
