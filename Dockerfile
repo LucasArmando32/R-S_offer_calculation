@@ -11,6 +11,6 @@ RUN pip install --no-cache-dir -r /app/requirements.txt
 # Copy the rest of the project
 COPY . /app
 
-EXPOSE 80
+EXPOSE 8000
 
-CMD ["python", "app.py"]
+CMD ["python", "app.py", gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "app:app"]
