@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Asbestsanierung – Kalkulation</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 520px;
+    }
+
+    h1 {
+      font-size: 24px;
+      color: #1a1a2e;
+      margin-bottom: 4px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 24px;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      border: 1px solid #e0e0e0;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .card h2 {
+      font-size: 13px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .field {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .field:last-child { margin-bottom: 0; }
+
+    .field label {
+      font-size: 13px;
+      color: #555;
+    }
+
+    .field input[type="text"],
+    .field input[type="number"] {
+      width: 160px;
+      padding: 7px 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 13px;
+      color: #222;
+      background: #f9f9f9;
+      outline: none;
+      transition: border 0.15s;
+    }
+
+    .field input:focus {
+      border-color: #3a7bd5;
+      background: #fff;
+    }
+
+    .options-list { list-style: none; }
+
+    .options-list li {
+      padding: 8px 4px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .options-list li label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: #333;
+      cursor: pointer;
+    }
+
+    .options-list input[type="radio"] {
+      accent-color: #3a7bd5;
+      width: 16px;
+      height: 16px;
+    }
+
+    .options-list input[type="radio"]:checked + span {
+      color: #1a1a2e;
+      font-weight: 600;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+
+    button {
+      flex: 1;
+      padding: 11px;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    #calc-btn {
+      background: #3a7bd5;
+      color: white;
+    }
+    #calc-btn:hover { background: #2d6abf; }
+
+    #reset-btn {
+      background: transparent;
+      color: #888;
+      border: 1px solid #ccc;
+      font-weight: 400;
+    }
+    #reset-btn:hover { background: #eee; }
+
+    .result-box {
+      background: #1a1a2e;
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .result-label {
+      font-size: 12px;
+      color: #aaaacc;
+      margin-bottom: 6px;
+    }
+
+    .result-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .result-breakdown {
+      margin-top: 10px;
+      font-size: 11px;
+      color: #6666aa;
+    }
+
+    .error {
+      color: #e05555;
+      font-size: 12px;
+      text-align: center;
+      margin-top: 8px;
+      min-height: 18px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Asbestsanierung</h1>
+  <p class="subtitle">Kalkulation ohne MwSt · CHF</p>
+
+  <!-- Inputs -->
+  <div class="card">
+    <h2>Eingabeparameter</h2>
+    <div class="field">
+      <label for="baustelle">Baustelle</label>
+      <input type="text" id="baustelle" placeholder="z.B. Muster AG, Zürich"/>
+    </div>
+    <div class="field">
+      <label for="T">T – Anzahl Tage</label>
+      <input type="number" id="T" value="1" min="1"/>
+    </div>
+    <div class="field">
+      <label for="S">S – Fläche (m²)</label>
+      <input type="number" id="S" value="0" min="0"/>
+    </div>
+    <div class="field">
+      <label for="LM">LM – Anzahl Luftmessung</label>
+      <input type="number" id="LM" value="0" min="0"/>
+    </div>
+  </div>
+
+  <!-- Options -->
+  <div class="card">
+    <h2>Sanierungsart</h2>
+    <ul class="options-list">
+      <li><label><input type="radio" name="option" value="1" checked/><span>Option 1 – EKAS 6503</span></label></li>
+      <li><label><input type="radio" name="option" value="2"/><span>Option 2 – Factsheet 33077 (Fliesen &lt; 5 m²)</span></label></li>
+      <li><label><input type="radio" name="option" value="3"/><span>Option 3 – Factsheet 33036 (LBP &lt; 0.5 m²)</span></label></li>
+      <li><label><input type="radio" name="option" value="4"/><span>Option 4 – Factsheet 33049 (Vinyl schw. Kleber)</span></label></li>
+    </ul>
+  </div>
+
+  <!-- Buttons -->
+  <div class="buttons">
+    <button id="reset-btn" onclick="reset()">Zurücksetzen</button>
+    <button id="calc-btn" onclick="calculate()">Berechnen</button>
+  </div>
+
+  <!-- Result -->
+  <div class="result-box">
+    <div class="result-label">Total (ohne MwSt)</div>
+    <div class="result-value" id="result">–</div>
+    <div class="result-breakdown" id="breakdown"></div>
+  </div>
+  <div class="error" id="error"></div>
+</div>
+
+<script>
+  async function calculate() {
+    document.getElementById("error").textContent = "";
+    document.getElementById("breakdown").textContent = "";
+
+    const T      = parseFloat(document.getElementById("T").value);
+    const S      = parseFloat(document.getElementById("S").value);
+    const LM     = parseFloat(document.getElementById("LM").value);
+    const option = parseInt(document.querySelector('input[name="option"]:checked').value);
+
+    const res  = await fetch("/calculate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ T, S, LM, option })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      document.getElementById("error").textContent = data.error;
+      document.getElementById("result").textContent = "–";
+      return;
+    }
+
+    document.getElementById("result").textContent = data.formatted;
+
+    const lmLine = data.lm_cost > 0
+      ? `  Luftmessung: CHF ${data.lm_cost.toLocaleString('de-CH', {minimumFractionDigits:2})}`
+      : "";
+    document.getElementById("breakdown").textContent =
+      `Basis: CHF ${data.base.toLocaleString('de-CH', {minimumFractionDigits:2})}${lmLine ? "  ·  " + lmLine : ""}`;
+  }
+
+  function reset() {
+    document.getElementById("baustelle").value = "";
+    document.getElementById("T").value = "1";
+    document.getElementById("S").value = "0";
+    document.getElementById("LM").value = "0";
+    document.querySelector('input[name="option"][value="1"]').checked = true;
+    document.getElementById("result").textContent = "–";
+    document.getElementById("breakdown").textContent = "";
+    document.getElementById("error").textContent = "";
+  }
+</script>
+</body>
+</html>
