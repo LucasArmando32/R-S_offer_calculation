@@ -1,13 +1,16 @@
 FROM python:3.11-slim
 
 WORKDIR /app
-COPY requirements.txt
-RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# Copy requirements file into the container
+COPY requirements.txt /app/requirements.txt
 
-# Expose Flask port
+# Install dependencies
+RUN pip install --no-cache-dir -r /app/requirements.txt
+
+# Copy the rest of the project
+COPY . /app
+
 EXPOSE 5000
 
-# Start the Flask app
 CMD ["python", "app.py"]
